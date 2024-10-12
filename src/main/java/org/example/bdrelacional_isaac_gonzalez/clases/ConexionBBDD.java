@@ -21,7 +21,6 @@ public class ConexionBBDD {
         String name="";
         String username="";
         String password="";
-        boolean conect=false;
         try {
             properties.load(new FileInputStream(new File("src/main/resources/configuration/database.properties")));
 
