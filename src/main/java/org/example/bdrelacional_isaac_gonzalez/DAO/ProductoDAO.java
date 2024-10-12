@@ -1,64 +1,68 @@
 package org.example.bdrelacional_isaac_gonzalez.DAO;
 
-import org.example.bdrelacional_isaac_gonzalez.clases.ConexionBBDD;
 import org.example.bdrelacional_isaac_gonzalez.domain.Producto;
+import org.example.bdrelacional_isaac_gonzalez.util.R;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ProductoDAO {
-    public void guardarProducto(Producto producto) throws SQLException, IOException, ClassNotFoundException {
-        Connection con = ConexionBBDD.conectar();
-        String sql = "INSERT INTO productos (precio, marca, nombre, tipo) VALUES (?, ?, ?, ?)";
 
-        if (con != null){
-           PreparedStatement sentencia = con.prepareStatement(sql);
+    private Connection conexion;
+
+    public void conectar() throws ClassNotFoundException, SQLException, IOException {
+        Properties configuration = new Properties();
+        configuration.load(R.getProperties("database.properties"));
+        String host = configuration.getProperty("host");
+        String port = configuration.getProperty("port");
+        String name = configuration.getProperty("name");
+        String username = configuration.getProperty("username");
+        String password = configuration.getProperty("password");
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conexion = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + name + "?serverTimezone=UTC",
+                username, password);
+    }
+
+    public void desconectar() throws SQLException {
+        conexion.close();
+    }
+
+    public void guardarProducto(Producto producto) throws SQLException, IOException, ClassNotFoundException {
+        String sql = "INSERT INTO productos (precio, marca, nombre, tipo) VALUES (?, ?, ?, ?)";
+           PreparedStatement sentencia = conexion.prepareStatement(sql);
            sentencia.setInt(1, producto.getPrecio());
            sentencia.setString(2, producto.getMarca());
            sentencia.setString(2, producto.getNombre());
            sentencia.setString(2, producto.getTipo());
            sentencia.executeUpdate();
-        }
     }
 
     public void eliminarProducto(Producto producto) throws SQLException, IOException, ClassNotFoundException {
-        Connection con = ConexionBBDD.conectar();
         String sql = "DELETE FROM productos WHERE nombre = ?";
-
-        if (con != null){
-            PreparedStatement sentencia = con.prepareStatement(sql);
+            PreparedStatement sentencia = conexion.prepareStatement(sql);
             sentencia.setString(1, producto.getNombre());
             sentencia.executeUpdate();
-        }
     }
 
     public void modificarProducto(Producto productoAntiguo, Producto productoNuevo) throws SQLException, IOException, ClassNotFoundException {
-        Connection con = ConexionBBDD.conectar();
         String sql = "UPDATE productos SET precio = ?, marca = ?, nombre = ?, tipo = ? WHERE id = ?";
-
-        if (con != null){
-            PreparedStatement sentencia = con.prepareStatement(sql);
+            PreparedStatement sentencia = conexion.prepareStatement(sql);
             sentencia.setInt(1, productoNuevo.getPrecio());
             sentencia.setString(2, productoNuevo.getMarca());
             sentencia.setString(2, productoNuevo.getNombre());
             sentencia.setString(2, productoNuevo.getTipo());
             sentencia.setInt(5, productoAntiguo.getId());
             sentencia.executeUpdate();
-        }
     }
 
     public List<Producto> obtenerProductos() throws SQLException, IOException, ClassNotFoundException {
-        Connection con = ConexionBBDD.conectar();
         List<Producto> productos = new ArrayList<>();
         String sql = "SELECT * FROM productos";
-
-        if (con != null){
-            PreparedStatement sentencia = con.prepareStatement(sql);
+            PreparedStatement sentencia = conexion.prepareStatement(sql);
             ResultSet resultado = sentencia.executeQuery();
             while (resultado.next()) {
                 Producto producto = new Producto();
@@ -70,7 +74,6 @@ public class ProductoDAO {
 
                 productos.add(producto);
             }
-        }
         return productos;
     }
 }
