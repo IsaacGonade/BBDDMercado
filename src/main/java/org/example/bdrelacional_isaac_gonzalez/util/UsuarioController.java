@@ -41,9 +41,12 @@ public class UsuarioController implements Initializable {
             if (usuTF.getText().isEmpty() || passTF.getText().isEmpty()) {
                 Alerts.mostrarError("Por favor, completa ambos campos");
             } else {
+                //introduce los datos puestos por el usuario
                 usuario.setUsuario(usuTF.getText());
                 usuario.setPass(passTF.getText());
+                //comprueba que ese usuario está en la base de datos
                 if (usuarioDAO.validarUsuario(usuario)){
+                    //carga el siguiente formulario
                     FXMLLoader loader = new FXMLLoader();
                     loader.setLocation(R.getUI("Gestion.fxml"));
                     Stage newStage = new Stage();

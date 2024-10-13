@@ -54,13 +54,28 @@ public class GestionController implements Initializable {
     private final ProductoDAO productoDAO = new ProductoDAO();
     private Producto productoSeleccionado;
 
+    //validacion para que el campo de texto de precio no tenga cadenas de texto
+    public static boolean contieneNumeros(String texto){
+        /** Este método verifica si la cadena de texto proporcionada contiene solamente números.
+         * Se utiliza el método matches() para comprobar si la cadena coincide con la expresión regular.
+         * En este caso, la expresión regular utilizada es "\\d+", que significa:
+         '\\d': representa cualquier dígito (del 0 al 9).
+         '+': indica que debe haber al menos uno o más dígitos consecutivos.
+         * Si la cadena contiene solo números, el método matches() devolverá true.
+         * Si la cadena contiene cualquier otro carácter que no sea un número, devolverá false. */
+        return texto.matches("\\d+");
+    }
+
 
     //metodo para cargar los datos de la base de datos
     public void cargarDatos() {
+        //limpia los campos
         productosLV.getItems().clear();
         try {
+            //cargo los datos en la lista
             List<Producto> productos = productoDAO.obtenerProductos();
             productosLV.setItems(FXCollections.observableList(productos));
+            //relleno el combobox
             String[] tipos = new String[]{"Carne","Pescado","Verdura","Fruta","Lacteos"};
             cbTipo.setItems(FXCollections.observableArrayList(tipos));
         } catch (SQLException sqle) {
@@ -72,13 +87,15 @@ public class GestionController implements Initializable {
 
     @FXML
     void eliminarProducto(ActionEvent event) {
+        //comprueba si se ha seleccionado algun producto de la lista
         Producto producto = productosLV.getSelectionModel().getSelectedItem();
         if (producto == null) {
-            estadoLb.setText("ERROR: No se ha seleccionado ningún producto");
+            estadoLb.setText("No se ha seleccionado ningún producto");
             return;
         }
 
         try {
+            //alerta para confirmar la accion
             Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
             confirmacion.setTitle("¿Eliminar producto?");
             confirmacion.setContentText("¿Estás seguro?");
@@ -88,7 +105,7 @@ public class GestionController implements Initializable {
             }
 
             productoDAO.eliminarProducto(producto);
-            estadoLb.setText("MENSAJE: Producto eliminado con éxito");
+            estadoLb.setText("Producto eliminado con éxito");
 
             cargarDatos();
         } catch (SQLException sqle) {
@@ -100,17 +117,24 @@ public class GestionController implements Initializable {
 
     @FXML
     void modificarProducto(ActionEvent event) {
+        //comprueba si el campo de texto esta vacio y que el precio sea un número
         String marca = marcaTF.getText();
         if (marca.isEmpty()) {
             Alerts.mostrarError("La marca es un campo obligatorio");
             return;
+        } else if (!contieneNumeros(precioTF.getText())){
+            Alerts.mostrarError("El precio debe ser un numero");
+            return;
         }
+
+        //recoge las variables y crea un nuevo objeto
         String nombre = nombreTF.getText();
         int precio = Integer.parseInt(precioTF.getText());
         String tipo = cbTipo.getSelectionModel().getSelectedItem();
         Producto producto = new Producto(precio, marca, nombre, tipo);
 
         try {
+            //alerta para confirmar la accion
             Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
             confirmacion.setTitle("¿Modificar producto?");
             confirmacion.setContentText("¿Estás seguro?");
@@ -132,17 +156,25 @@ public class GestionController implements Initializable {
 
     @FXML
     void guardarProducto(ActionEvent event) {
+        //comprueba si el campo de texto esta vacio y que el precio sea un número
         String marca = marcaTF.getText();
+
         if (marca.isEmpty()) {
             Alerts.mostrarError("La marca es un campo obligatorio");
             return;
+        } else if (!contieneNumeros(precioTF.getText())){
+            Alerts.mostrarError("El precio debe ser un numero");
+            return;
         }
+
+        //recoge las variables y crea un nuevo objeto
         String nombre = nombreTF.getText();
         int precio = Integer.parseInt(precioTF.getText());
         String tipo = cbTipo.getSelectionModel().getSelectedItem();
         Producto producto = new Producto(precio, marca, nombre, tipo);
 
         try {
+            //alerta para confirmar la accion
             Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
             confirmacion.setTitle("¿Añadir producto?");
             confirmacion.setContentText("¿Estás seguro?");
@@ -150,7 +182,7 @@ public class GestionController implements Initializable {
             if (respuesta.get().getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE){
                 return;
             }
-
+            //llamo al metodo
             productoDAO.guardarProducto(producto);
             estadoLb.setText("Producto guardado con éxito");
 
