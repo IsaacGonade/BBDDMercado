@@ -11,7 +11,7 @@
       <Label layoutX="422.0" layoutY="88.0" prefHeight="17.0" prefWidth="31.0" text="Tipo" />
       <TextField fx:id="marcaTF" layoutX="89.0" layoutY="84.0" prefHeight="25.0" prefWidth="149.0" />
       <TextField fx:id="nombreTF" layoutX="89.0" layoutY="119.0" />
-      <Button fx:id="btNuevo" layoutX="412.0" layoutY="163.0" mnemonicParsing="false" onAction="#nuevoProducto" text="Nuevo" />
+      <Button fx:id="btNuevo" layoutX="412.0" layoutY="163.0" mnemonicParsing="false" onAction="#guardarProducto" text="Nuevo" />
       <Button fx:id="btEliminar" layoutX="566.0" layoutY="163.0" mnemonicParsing="false" onAction="#eliminarProducto" text="Eliminar" />
       <Button fx:id="btModificar" layoutX="478.0" layoutY="163.0" mnemonicParsing="false" onAction="#modificarProducto" prefHeight="25.0" prefWidth="74.0" text="Modificar" />
       <ComboBox fx:id="cbTipo" layoutX="459.0" layoutY="83.0" prefHeight="27.0" prefWidth="167.0" />
@@ -22,9 +22,9 @@
          </font>
       </Label>
       <Button fx:id="LimpiarBt" layoutX="290.0" layoutY="163.0" mnemonicParsing="false" onAction="#onLimpiar" text="Limpiar" />
-      <Label fx:id="estadoLb" layoutX="125.0" layoutY="386.0" prefHeight="36.0" prefWidth="399.0">
+      <Label fx:id="estadoLb" layoutX="125.0" layoutY="386.0" prefHeight="36.0" prefWidth="399.0" textFill="RED">
          <font>
-            <Font size="16.0" />
+            <Font name="System Bold" size="16.0" />
          </font>
       </Label>
       <Label layoutX="38.0" layoutY="155.0" prefHeight="17.0" prefWidth="51.0" text="Precio:" />

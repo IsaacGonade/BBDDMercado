@@ -34,31 +34,16 @@ public class UsuarioController implements Initializable {
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
     Usuario usuario = new Usuario();
 
-    public void UsuarioController() {
-        try {
-            usuarioDAO.conectar();
-        } catch (SQLException sqle) {
-            Alerts.mostrarError("Error al conectar con la base de datos");
-        } catch (ClassNotFoundException cnfe) {
-            Alerts.mostrarError("Error al iniciar la aplicación");
-        } catch (IOException ioe) {
-            Alerts.mostrarError("Error al cargar la configuración");
-        }
-
-        System.out.println(System.getProperty("user.home"));
-    }
-
     @FXML
-    void onIniciar(ActionEvent event) throws SQLException, IOException, ClassNotFoundException {
+    void onIniciar(ActionEvent event) throws IOException{
         try {
-            // Verificar que los campos no estén vacíos
+            // Verifica que los campos no estén vacíos
             if (usuTF.getText().isEmpty() || passTF.getText().isEmpty()) {
                 Alerts.mostrarError("Por favor, completa ambos campos");
             } else {
                 usuario.setUsuario(usuTF.getText());
                 usuario.setPass(passTF.getText());
-                if (usuarioDAO.validarUsuario(usuario)){ //Compruebo si el usuario es administrador del sistema
-                    usuarioDAO.desconectar();
+                if (usuarioDAO.validarUsuario(usuario)){
                     FXMLLoader loader = new FXMLLoader();
                     loader.setLocation(R.getUI("Gestion.fxml"));
                     Stage newStage = new Stage();
@@ -67,8 +52,8 @@ public class UsuarioController implements Initializable {
                     newStage.show();
                     Stage currentStage = (Stage) ventanaUsu.getScene().getWindow();
                     currentStage.close();
-                } else if (!usuarioDAO.validarUsuario(usuario)){ //Si no existe ese usuario:
-                    Alerts.mostrarError("Usuario o contraseña erroneos");
+                } else if (!usuarioDAO.validarUsuario(usuario)){
+                    Alerts.mostrarError("Usuario o contraseña no son correctos");
                 }
             }
         } catch (SQLException e) {
@@ -78,7 +63,7 @@ public class UsuarioController implements Initializable {
         }
     }
 
-
+    //metodo para conectar con la base de datos
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {

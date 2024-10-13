@@ -7,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.example.bdrelacional_isaac_gonzalez.DAO.ProductoDAO;
-import org.example.bdrelacional_isaac_gonzalez.DAO.UsuarioDAO;
 import org.example.bdrelacional_isaac_gonzalez.domain.Producto;
 
 import java.io.IOException;
@@ -52,19 +51,11 @@ public class GestionController implements Initializable {
     @FXML
     private ListView<Producto> productosLV;
 
-    private enum Accion{
-        NUEVO, MODIFICAR
-    }
-    private Accion accion;
-    private ProductoDAO productoDAO = new ProductoDAO();
-    private UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private final ProductoDAO productoDAO = new ProductoDAO();
     private Producto productoSeleccionado;
 
 
-    public GestionController() throws SQLException, IOException, ClassNotFoundException {
-        usuarioDAO.conectar();
-    }
-
+    //metodo para cargar los datos de la base de datos
     public void cargarDatos() {
         productosLV.getItems().clear();
         try {
@@ -78,7 +69,6 @@ public class GestionController implements Initializable {
             throw new RuntimeException(e);
         }
     }
-
 
     @FXML
     void eliminarProducto(ActionEvent event) {
@@ -111,7 +101,7 @@ public class GestionController implements Initializable {
     @FXML
     void modificarProducto(ActionEvent event) {
         String marca = marcaTF.getText();
-        if (marca.equals("")) {
+        if (marca.isEmpty()) {
             Alerts.mostrarError("La marca es un campo obligatorio");
             return;
         }
@@ -129,24 +119,21 @@ public class GestionController implements Initializable {
                 return;
             }
 
-
             productoDAO.modificarProducto(productoSeleccionado, producto);
-            estadoLb.setText("Producto guardado con éxito");
+            estadoLb.setText("Producto modificado con éxito");
 
             cargarDatos();
         } catch (SQLException sqle) {
-            Alerts.mostrarError("Error al añadir producto");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+            Alerts.mostrarError("Error al modificar producto");
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     @FXML
-    void nuevoProducto(ActionEvent event) {
+    void guardarProducto(ActionEvent event) {
         String marca = marcaTF.getText();
-        if (marca.equals("")) {
+        if (marca.isEmpty()) {
             Alerts.mostrarError("La marca es un campo obligatorio");
             return;
         }
@@ -164,28 +151,28 @@ public class GestionController implements Initializable {
                 return;
             }
 
-
             productoDAO.guardarProducto(producto);
             estadoLb.setText("Producto guardado con éxito");
 
             cargarDatos();
         } catch (SQLException sqle) {
-            Alerts.mostrarError("Error al guadar el coche");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+            Alerts.mostrarError("Error al guadar el producto");
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+
     }
 
+    //metodo para meter los datos de un producto
     private void cargarProducto(Producto producto) {
         marcaTF.setText(producto.getMarca());
-        nombreTF.setText(producto.getMarca());
+        nombreTF.setText(producto.getNombre());
         precioTF.setText(String.valueOf(producto.getPrecio()));
         cbTipo.setValue(producto.getTipo());
     }
 
-
+    //metodo para tener los datos de un producto seleccionado de la lista por el raton
     @FXML
     void seleccionarProducto(MouseEvent event) {
         productoSeleccionado = productosLV.getSelectionModel().getSelectedItem();
@@ -193,15 +180,18 @@ public class GestionController implements Initializable {
     }
 
 
+    //metodo para que el boton limpiar vacie los campos a rellenar
     @FXML
     void onLimpiar(ActionEvent event) {
         marcaTF.setText("");
         precioTF.setText("");
         nombreTF.setText("");
-        cbTipo.setValue("");
+        cbTipo.setValue("Selecciona tipo");
         marcaTF.requestFocus();
     }
 
+
+    //metodo para conectar con la base de datos
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {

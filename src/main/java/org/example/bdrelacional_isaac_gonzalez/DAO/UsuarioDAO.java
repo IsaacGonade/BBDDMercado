@@ -12,7 +12,7 @@ import java.util.Properties;
 public class UsuarioDAO {
 
     private Connection conexion;
-
+    //creo la conexion y la conecto a la base de datos
     public void conectar() throws ClassNotFoundException, SQLException, IOException {
         Properties configuration = new Properties();
         configuration.load(R.getProperties("database.properties"));
@@ -27,22 +27,8 @@ public class UsuarioDAO {
                 username, password);
     }
 
-    public void desconectar() throws SQLException {
-        conexion.close();
-    }
 
-    public boolean validarUsuario(Usuario usuario) throws SQLException{
-        List<Usuario> listaUsuarios = obtenerUsuarios();
-        boolean existe = false;
-        for (Usuario usuario1 : listaUsuarios){
-            if (usuario1.getUsuario().equals(usuario.getUsuario()) && usuario1.getPass().equals(usuario.getPass())){
-                existe = true;
-                break;
-            }
-        }
-        return existe;
-    }
-
+    //metodo para obtener todos los datos de los usuarios
     public List<Usuario> obtenerUsuarios() throws SQLException{
         List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT * FROM Usuarios";
@@ -56,4 +42,19 @@ public class UsuarioDAO {
         }
         return usuarios;
     }
+
+    //metodo para comprobar que un usuario existe
+    public boolean validarUsuario(Usuario usuario) throws SQLException{
+        List<Usuario> listaUsuarios = obtenerUsuarios();
+        boolean existe = false;
+        for (Usuario usuario1 : listaUsuarios){
+            if (usuario1.getUsuario().equals(usuario.getUsuario()) && usuario1.getPass().equals(usuario.getPass())){
+                existe = true;
+                break;
+            }
+        }
+        return existe;
+    }
+
+
 }
